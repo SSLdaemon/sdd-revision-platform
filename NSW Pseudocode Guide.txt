@@ -1,0 +1,242 @@
+NSW NESA Stage 6 Pseudocode Reference Guide
+For Software Design & Development (SDD) and Information Processes & Technology (IPT)
+NESA Pseudocode Requirements
+NESA requires a structured, keyword-based pseudocode style with strict formatting rules. All keywords must be in CAPS, every opening structure must have a closing pair, and code must be consistently indented.
+Core Keywords & Control Structures
+Procedure Definition
+BEGIN ProcedureName[statements]END
+Example:BEGIN CalculateAreaINPUT Length, WidthArea = Length * WidthDISPLAY AreaEND
+Selection (IF-THEN-ELSE)
+IF condition THEN[statements]ELSE[statements]ENDIF
+Example:IF Hours > NormalHours THENOvertime = Hours - NormalHoursPay = (NormalHours * Rate) + (Overtime * Rate * 1.5)ELSEPay = Hours * RateENDIF
+Multi-way Selection (CASE)
+CASEWHERE variablevalue1: [statements]value2: [statements]OTHERWISE: [statements]ENDCASE
+Example:CASEWHERE Grade'A': DISPLAY "Excellent"'B': DISPLAY "Good"'C': DISPLAY "Satisfactory"OTHERWISE: DISPLAY "Needs Improvement"ENDCASE
+Pre-test Loop (WHILE)
+WHILE condition[statements]ENDWHILE
+Example:Counter = 1WHILE Counter <= 10DISPLAY CounterCounter = Counter + 1ENDWHILE
+Post-test Loop (REPEAT-UNTIL)
+REPEAT[statements]UNTIL condition
+Example:REPEATINPUT PasswordAttempts = Attempts + 1UNTIL Password = "secret" OR Attempts >= 3
+Count Loop (FOR)
+FOR variable = start TO end[statements]NEXT
+Example:Total = 0FOR Counter = 1 TO 50Total = Total + CounterNEXTDISPLAY Total
+File Operations & Input/Output
+Operation
+Syntax
+Input from user
+INPUT variable
+Output to screen
+DISPLAY value or PRINT value
+Open file
+OPEN filename
+Read from file
+READ variable FROM filename
+Write to file
+WRITE value TO filename
+Close file
+CLOSE filename
+End of file check
+WHILE NOT EOF
+Table 1: NESA-compliant file and I/O operations
+File Processing Example:OPEN StudentFileWHILE NOT EOFREAD Name, Mark FROM StudentFileIF Mark >= 50 THENDISPLAY Name, "Pass"ELSEDISPLAY Name, "Fail"ENDIFENDWHILECLOSE StudentFile
+Complete Worked Example: Pay Calculator
+Problem: Calculate employee pay with overtime (1.5× rate for hours over 7).
+BEGIN CalculatePayBaseRate = 50NormalHours = 7Overtime = 0
+INPUT HoursIF Hours > NormalHours THEN    BaseHours = NormalHours    Overtime = Hours - NormalHours    TotalPay = (BaseHours * BaseRate) + (Overtime * BaseRate * 1.5)ELSE    BaseHours = Hours    TotalPay = BaseHours * BaseRateENDIFDISPLAY "Total Pay: $", TotalPay
+END
+Essential Formatting Rules
+CAPS for all keywords — IF, THEN, ELSE, ENDIF, WHILE, ENDWHILE, FOR, NEXT, BEGIN, END, etc.
+Matching pairs — Every opening structure must have a closing keyword:
+IF  ENDIF
+WHILE  ENDWHILE
+FOR  NEXT
+BEGIN  END
+CASEWHERE  ENDCASE
+REPEAT  UNTIL
+Consistent indentation — Indent all statements inside control structures by 4 spaces or 1 tab
+Assignment uses = — Standard equals sign for variable assignment (e.g., Total = 0)
+Boolean operators in CAPS — AND, OR, NOT
+Initialize variables — Always set initial values before use
+Clear variable names — Use descriptive names (e.g., TotalPay not TP)
+Common Mistakes to Avoid
+Missing ENDIF/ENDWHILE/NEXT — Every opening keyword must close
+Lowercase keywords — Write IF not if
+Inconsistent indentation — Keep structure visible
+Using = for comparison — Use correct comparison operators (>, <, >=, <=, =)
+Forgetting to initialize counters — Set Counter = 0 before loops
+Not closing files — Always CLOSE after file operations
+Teaching Progression
+Stage 1: Basic Sequences
+Teach BEGIN/END structure
+Practice INPUT, DISPLAY, and simple calculations
+Introduce variable assignment and initialization
+Stage 2: Selection
+Start with simple IF-THEN-ENDIF (no ELSE)
+Progress to IF-THEN-ELSE-ENDIF
+Introduce CASEWHERE for multiple options
+Stage 3: Iteration
+Begin with FOR loops (fixed count)
+Move to WHILE loops (pre-test)
+Teach REPEAT-UNTIL (post-test)
+Stage 4: File Processing
+Introduce OPEN, READ, WRITE, CLOSE
+Practice EOF checking with WHILE NOT EOF
+Combine file operations with selection and iteration
+Assessment Expectations
+Students must demonstrate:
+Correct use of CAPS keywords
+Properly paired opening/closing structures
+Consistent, clear indentation
+Logical flow from problem to solution
+Appropriate use of selection and iteration
+Correct initialization of variables
+Meaningful variable names
+Quick Reference: Algorithm Structures Comparison
+Structure
+Use When
+Keywords
+Sequence
+Steps in order
+BEGIN ... END
+Selection (2-way)
+True/false decision
+IF ... THEN ... ELSE ... ENDIF
+Selection (multi-way)
+Multiple options
+CASEWHERE ... OTHERWISE ... ENDCASE
+Pre-test loop
+Unknown iterations, may skip
+WHILE ... ENDWHILE
+Post-test loop
+At least 1 iteration needed
+REPEAT ... UNTIL
+Count loop
+Known iterations
+FOR ... TO ... NEXT
+Table 2: Choosing the correct control structure
+References
+This guide is based on NESA Software Design and Development course specifications and HSC examination standards. For full syllabus documentation, visit: educationstandards.nsw.edu.au
+Key Sources: NSW SDD Syllabus, NESA Course Specifications, HSC SDD Examination Papers (2017-2023)
+Prepared for Stage 6 SDD/IPT Teachers | Aligned with NESA Standards 2026
+NSW NESA Stage 6 Pseudocode Reference Guide
+For Software Design & Development (SDD) and Information Processes & Technology (IPT)
+NESA Pseudocode Requirements
+NESA requires a structured, keyword-based pseudocode style with strict formatting rules. All keywords must be in CAPS, every opening structure must have a closing pair, and code must be consistently indented.
+Core Keywords & Control Structures
+Procedure Definition
+BEGIN ProcedureName[statements]END
+Example:BEGIN CalculateAreaINPUT Length, WidthArea = Length * WidthDISPLAY AreaEND
+Selection (IF-THEN-ELSE)
+IF condition THEN[statements]ELSE[statements]ENDIF
+Example:IF Hours > NormalHours THENOvertime = Hours - NormalHoursPay = (NormalHours * Rate) + (Overtime * Rate * 1.5)ELSEPay = Hours * RateENDIF
+Multi-way Selection (CASE)
+CASEWHERE variablevalue1: [statements]value2: [statements]OTHERWISE: [statements]ENDCASE
+Example:CASEWHERE Grade'A': DISPLAY "Excellent"'B': DISPLAY "Good"'C': DISPLAY "Satisfactory"OTHERWISE: DISPLAY "Needs Improvement"ENDCASE
+Pre-test Loop (WHILE)
+WHILE condition[statements]ENDWHILE
+Example:Counter = 1WHILE Counter <= 10DISPLAY CounterCounter = Counter + 1ENDWHILE
+Post-test Loop (REPEAT-UNTIL)
+REPEAT[statements]UNTIL condition
+Example:REPEATINPUT PasswordAttempts = Attempts + 1UNTIL Password = "secret" OR Attempts >= 3
+Count Loop (FOR)
+FOR variable = start TO end[statements]NEXT
+Example:Total = 0FOR Counter = 1 TO 50Total = Total + CounterNEXTDISPLAY Total
+File Operations & Input/Output
+Operation
+Syntax
+Input from user
+INPUT variable
+Output to screen
+DISPLAY value or PRINT value
+Open file
+OPEN filename
+Read from file
+READ variable FROM filename
+Write to file
+WRITE value TO filename
+Close file
+CLOSE filename
+End of file check
+WHILE NOT EOF
+Table 3: NESA-compliant file and I/O operations
+File Processing Example:OPEN StudentFileWHILE NOT EOFREAD Name, Mark FROM StudentFileIF Mark >= 50 THENDISPLAY Name, "Pass"ELSEDISPLAY Name, "Fail"ENDIFENDWHILECLOSE StudentFile
+Complete Worked Example: Pay Calculator
+Problem: Calculate employee pay with overtime (1.5× rate for hours over 7).
+BEGIN CalculatePayBaseRate = 50NormalHours = 7Overtime = 0
+INPUT HoursIF Hours > NormalHours THEN    BaseHours = NormalHours    Overtime = Hours - NormalHours    TotalPay = (BaseHours * BaseRate) + (Overtime * BaseRate * 1.5)ELSE    BaseHours = Hours    TotalPay = BaseHours * BaseRateENDIFDISPLAY "Total Pay: $", TotalPay
+END
+Essential Formatting Rules
+CAPS for all keywords — IF, THEN, ELSE, ENDIF, WHILE, ENDWHILE, FOR, NEXT, BEGIN, END, etc.
+Matching pairs — Every opening structure must have a closing keyword:
+IF  ENDIF
+WHILE  ENDWHILE
+FOR  NEXT
+BEGIN  END
+CASEWHERE  ENDCASE
+REPEAT  UNTIL
+Consistent indentation — Indent all statements inside control structures by 4 spaces or 1 tab
+Assignment uses = — Standard equals sign for variable assignment (e.g., Total = 0)
+Boolean operators in CAPS — AND, OR, NOT
+Initialize variables — Always set initial values before use
+Clear variable names — Use descriptive names (e.g., TotalPay not TP)
+Common Mistakes to Avoid
+Missing ENDIF/ENDWHILE/NEXT — Every opening keyword must close
+Lowercase keywords — Write IF not if
+Inconsistent indentation — Keep structure visible
+Using = for comparison — Use correct comparison operators (>, <, >=, <=, =)
+Forgetting to initialize counters — Set Counter = 0 before loops
+Not closing files — Always CLOSE after file operations
+Teaching Progression
+Stage 1: Basic Sequences
+Teach BEGIN/END structure
+Practice INPUT, DISPLAY, and simple calculations
+Introduce variable assignment and initialization
+Stage 2: Selection
+Start with simple IF-THEN-ENDIF (no ELSE)
+Progress to IF-THEN-ELSE-ENDIF
+Introduce CASEWHERE for multiple options
+Stage 3: Iteration
+Begin with FOR loops (fixed count)
+Move to WHILE loops (pre-test)
+Teach REPEAT-UNTIL (post-test)
+Stage 4: File Processing
+Introduce OPEN, READ, WRITE, CLOSE
+Practice EOF checking with WHILE NOT EOF
+Combine file operations with selection and iteration
+Assessment Expectations
+Students must demonstrate:
+Correct use of CAPS keywords
+Properly paired opening/closing structures
+Consistent, clear indentation
+Logical flow from problem to solution
+Appropriate use of selection and iteration
+Correct initialization of variables
+Meaningful variable names
+Quick Reference: Algorithm Structures Comparison
+Structure
+Use When
+Keywords
+Sequence
+Steps in order
+BEGIN ... END
+Selection (2-way)
+True/false decision
+IF ... THEN ... ELSE ... ENDIF
+Selection (multi-way)
+Multiple options
+CASEWHERE ... OTHERWISE ... ENDCASE
+Pre-test loop
+Unknown iterations, may skip
+WHILE ... ENDWHILE
+Post-test loop
+At least 1 iteration needed
+REPEAT ... UNTIL
+Count loop
+Known iterations
+FOR ... TO ... NEXT
+Table 4: Choosing the correct control structure
+References
+This guide is based on NESA Software Design and Development course specifications and HSC examination standards. For full syllabus documentation, visit: educationstandards.nsw.edu.au
+Key Sources: NSW SDD Syllabus, NESA Course Specifications, HSC SDD Examination Papers (2017-2023)
+Prepared for Stage 6 SDD/IPT Teachers | Aligned with NESA Standards 2026

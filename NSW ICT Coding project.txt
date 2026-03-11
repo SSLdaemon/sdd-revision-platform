@@ -1,0 +1,61 @@
+Project brief
+Students act as a junior ICT team supporting the school radio club, which currently manages song requests, presenter notes, and episode run sheets using scattered paper notes, messages, and spreadsheets. Their task is to design and build a text-based Python application that records and organises radio show information, then provide the client with documentation and advice about secure storage, backup, and suitable cloud use.[1]
+The final solution should include at least three functional components: request logging, presenter or segment notes, and episode run-sheet generation or viewing. Students should also produce a planning pack, test evidence, a user guide or readme, and a short advisory note explaining how the school radio team should store records securely and protect any personal information they collect.[1]
+Success criteria
+Students should be able to:
+Define the client problem and write clear specifications using targeted questioning and a problem statement.[1]
+Design a solution using an IPO diagram, flowchart, pseudocode, or a similar model of inputs, processes, and outputs.[1]
+Build a simple Python application using variables, data types, control structures, standard modules, and relevant subprograms.[1]
+Test and debug the program using planned test data, expected results, and correction of unexpected output.[1]
+Produce documentation such as code comments, a readme, FAQ, or troubleshooting guide.[1]
+Explain how records should be stored, backed up, and protected in line with security and privacy expectations.[1]
+Six lessons
+Lesson 1
+Introduce the client scenario and run a short “radio club briefing” where students identify the current problem, users, constraints, and desired outputs. Students finish with interview questions, a problem statement, and draft success criteria, which directly supports the syllabus focus on questioning, problem definition, and clarifying specifications with a client.[1]
+Lesson 2
+Students map the system using an IPO diagram, flowchart, pseudocode, and a field list for each record type such as request, note, and run sheet. This aligns with the syllabus expectation to use specifications to develop IPO diagrams, flowcharts, and algorithmic representations before coding.[1]
+Lesson 3
+Teach the first build stage in Python: menu design, variables, strings, integers, booleans, input, output, and selection. By the end, students should have a working menu and at least one feature such as adding a song request, which supports the unit focus on syntax, layout, and control structures.[1]
+Lesson 4
+Expand the application with iteration, functions, validation, and file handling so data can be saved and retrieved. This lesson is where students begin to see how their coded solution can support a workplace-style record system and later connect to backup and cloud storage advice.[1]
+Lesson 5
+Students test their application with planned test cases, expected outcomes, outliers, and error conditions, then use debugging and peer feedback to improve the solution. This lesson maps closely to the syllabus focus on test data, unexpected output, debuggers, correction of errors, and evaluation of functionality and performance.[1]
+Lesson 6
+Students complete the client handover by preparing a readme or user guide, demonstrating the program, and writing a short advice note on secure storage, backups, and possible cloud storage options. This draws together the innovation and client-advice strands with the protecting-data strand through documentation, feedback, and safe handling of information.[1]
+Feature list
+A sensible feature set for the Python program would be:
+Add a song request.
+View all song requests.
+Search requests by song, artist, or requester.
+Add presenter notes for a segment.
+Create a basic episode run sheet.
+Save records to file and load them again.
+Validate required fields such as song title or segment type.
+Flag whether a request includes personal details that should be stored carefully.[1]
+If you want a more advanced extension, students could add sorting, duplicate checking, a “clean lyrics checked” field, or simple reporting such as the most-requested artist. Those features are useful extensions, but they should come after the basic complete application is working and documented.[1]
+Assessment plan
+Task
+Evidence
+Main syllabus fit
+Planning pack
+Client questions, problem statement, specifications, IPO, pseudocode
+Innovation; Working in the industry. [1]
+Prototype build
+Python code with menu, inputs, processing, outputs
+ICTPRG302 and Working in the industry. [1]
+Testing pack
+Test table, expected output, debugging notes, improvements
+Code testing and evaluation. [1]
+Client handover
+Readme, user guide, FAQ or troubleshooting notes, advisory report
+ICTSAS305, documentation, protecting data. [1]
+A simple rubric could use four strands:
+Problem definition and planning.[1]
+Program functionality and coding quality.[1]
+Testing, debugging, and refinement.[1]
+Documentation, client communication, and security advice.[1]
+If you want, the next step I can do is write the full teacher-ready version with:
+a polished assessment notification,
+a detailed rubric with achievement bands,
+and a sample Python program structure students could follow.
+                         

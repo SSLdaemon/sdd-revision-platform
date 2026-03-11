@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 2: Code-to-Pseudocode Bridge | Lesson 3.1</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --blue: #1F4E79;
+    --blue-light: #2B6CB0;
+    --blue-pale: #D6E4F0;
+    --blue-glow: #3B82F6;
+    --green: #548235;
+    --green-light: #68A641;
+    --green-pale: #E2EFDA;
+    --orange: #C55A11;
+    --orange-pale: #FCE4D6;
+    --dark: #1a1a2e;
+    --darker: #12121f;
+    --card: #1e1e32;
+    --card-border: #2a2a45;
+    --text: #e8e8f0;
+    --text-dim: #9999b0;
+    --code-bg: #0d1117;
+    --code-line: #161b22;
+    --success: #4ade80;
+    --hint-bg: #1a2332;
+    --hint-border: #2B6CB0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--darker);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ===== SLIDE SYSTEM ===== */
+  .slide {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    padding: 70px 5vw 80px;
+    position: relative;
+    animation: fadeSlide 0.5s ease;
+    overflow-y: auto;
+  }
+  .slide.active { display: flex; }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== HEADER BAR ===== */
+  .top-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    background: rgba(18, 18, 31, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2.5vw;
+    z-index: 100;
+  }
+  .top-bar .brand {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--blue-glow);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .top-bar .lesson-tag {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    background: var(--card);
+    padding: 4px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--card-border);
+  }
+  .progress-track {
+    position: fixed;
+    top: 56px; left: 0; right: 0;
+    height: 3px;
+    background: var(--card);
+    z-index: 100;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue-glow), var(--green-light));
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 0 2px 2px 0;
+  }
+
+  /* ===== NAVIGATION ===== */
+  .nav-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 64px;
+    background: rgba(18, 18, 31, 0.92);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 3vw;
+    z-index: 100;
+  }
+  .nav-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 10px 28px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-btn.prev {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--card-border);
+  }
+  .nav-btn.prev:hover { background: #2a2a45; }
+  .nav-btn.next {
+    background: linear-gradient(135deg, var(--blue-glow), var(--blue-light));
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+  }
+  .nav-btn.next:hover { box-shadow: 0 6px 24px rgba(59, 130, 246, 0.45); transform: translateY(-1px); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; transform: none !important; box-shadow: none !important; }
+  .slide-counter {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  /* ===== TYPOGRAPHY ===== */
+  .slide-title {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 0.5em;
+    background: linear-gradient(135deg, #fff 0%, var(--blue-pale) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+  }
+  .slide-subtitle {
+    font-size: clamp(1rem, 1.8vw, 1.35rem);
+    color: var(--text-dim);
+    text-align: center;
+    max-width: 700px;
+    line-height: 1.6;
+    margin-bottom: 1.5em;
+  }
+  .phase-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--blue-glow);
+    background: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    padding: 6px 18px;
+    border-radius: 24px;
+    margin-bottom: 1.2em;
+  }
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--green-light);
+    margin-bottom: 0.8em;
+  }
+
+  /* ===== CARDS ===== */
+  .info-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 2em 2.5em;
+    max-width: 800px;
+    width: 100%;
+  }
+  .hint-card {
+    background: var(--hint-bg);
+    border: 1px solid var(--hint-border);
+    border-left: 4px solid var(--blue-glow);
+    border-radius: 12px;
+    padding: 1.2em 1.8em;
+    margin-top: 1em;
+    max-width: 700px;
+    width: 100%;
+  }
+  .hint-card .hint-icon { font-size: 1.1rem; margin-right: 8px; }
+  .hint-card p { font-size: 0.95rem; color: var(--text); line-height: 1.6; }
+  .hint-card .hint-label { font-weight: 700; color: var(--blue-glow); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+
+  /* ===== GRID LAYOUTS ===== */
+  .three-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5em;
+    max-width: 900px;
+    width: 100%;
+  }
+  .col-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 1.8em 1.5em;
+    text-align: center;
+    transition: border-color 0.3s;
+  }
+  .col-card:hover { border-color: var(--blue-glow); }
+  .col-card .icon { font-size: 2.2rem; margin-bottom: 0.6em; }
+  .col-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4em; }
+  .col-card p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.5; }
+
+  /* ===== CODE DISPLAY ===== */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid #30363d;
+    border-radius: 14px;
+    overflow: hidden;
+    max-width: 780px;
+    width: 100%;
+    font-family: 'JetBrains Mono', monospace;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .code-header {
+    background: #161b22;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #30363d;
+  }
+  .code-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .code-dot.red { background: #ff5f56; }
+  .code-dot.yellow { background: #ffbd2e; }
+  .code-dot.green { background: #27c93f; }
+  .code-filename { font-size: 0.75rem; color: #8b949e; margin-left: 10px; }
+  .code-body { padding: 1.2em 0; counter-reset: line; }
+  .code-line {
+    display: flex;
+    align-items: flex-start;
+    padding: 2px 1.2em;
+    font-size: clamp(0.78rem, 1.2vw, 0.95rem);
+    line-height: 1.7;
+    transition: background 0.2s;
+  }
+  .code-line:hover { background: rgba(110, 118, 129, 0.08); }
+  .code-line .ln {
+    color: #484f58;
+    min-width: 2.5em;
+    text-align: right;
+    padding-right: 1.2em;
+    user-select: none;
+    font-size: 0.8em;
+    line-height: 1.9;
+  }
+  .code-line .code { color: #e6edf3; white-space: pre; }
+  /* Syntax colors */
+  .kw { color: #ff7b72; }
+  .fn { color: #d2a8ff; }
+  .str { color: #a5d6ff; }
+  .cmt { color: #8b949e; font-style: italic; }
+  .op { color: #ff7b72; }
+  .var { color: #ffa657; }
+
+  /* ===== INTERACTIVE REVEAL ===== */
+  .reveal-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2em;
+    max-width: 1100px;
+    width: 100%;
+    align-items: start;
+  }
+  .reveal-code {
+    background: var(--code-bg);
+    border: 1px solid #30363d;
+    border-radius: 14px;
+    overflow: hidden;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .reveal-code .code-header { background: #161b22; padding: 10px 18px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #30363d; }
+  .reveal-code .code-body { padding: 0.8em 0; }
+  .reveal-code .code-line { padding: 3px 1em; font-size: clamp(0.65rem, 1vw, 0.82rem); line-height: 1.65; }
+  .reveal-code .code-line.highlight { background: rgba(59, 130, 246, 0.15); border-left: 3px solid var(--blue-glow); }
+  .reveal-code .code-line.upcoming {
+    background: rgba(255, 180, 50, 0.12);
+    border-left: 3px solid #f59e0b;
+    animation: pulse-upcoming 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse-upcoming {
+    0%, 100% { background: rgba(255, 180, 50, 0.08); }
+    50% { background: rgba(255, 180, 50, 0.18); }
+  }
+
+  .reveal-panel { display: flex; flex-direction: column; gap: 0; }
+  .reveal-panel-header {
+    background: linear-gradient(135deg, var(--green), var(--green-light));
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 14px 14px 0 0;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .reveal-list {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-top: none;
+    border-radius: 0 0 14px 14px;
+    padding: 0.6em 0;
+    list-style: none;
+  }
+  .reveal-item {
+    padding: 10px 20px;
+    font-size: clamp(0.78rem, 1.1vw, 0.92rem);
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    min-height: 42px;
+  }
+  .reveal-item:last-child { border-bottom: none; }
+  .reveal-item .step-num {
+    background: var(--card-border);
+    color: var(--text-dim);
+    min-width: 26px; height: 26px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: all 0.4s;
+  }
+  .reveal-item .answer {
+    color: var(--text-dim);
+    font-style: italic;
+    transition: all 0.5s;
+  }
+  .reveal-item.revealed .step-num {
+    background: var(--success);
+    color: var(--darker);
+  }
+  .reveal-item.revealed .answer {
+    color: var(--text);
+    font-style: normal;
+    font-weight: 500;
+  }
+  @keyframes popIn {
+    0% { opacity: 0; transform: translateX(-10px); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+  .reveal-item.revealed .answer { animation: popIn 0.4s ease; }
+
+  .reveal-btn {
+    font-family: 'Inter', sans-serif;
+    margin-top: 1.2em;
+    padding: 14px 32px;
+    font-size: 1rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--green), var(--green-light));
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(84, 130, 53, 0.35);
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    align-self: center;
+  }
+  .reveal-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(84, 130, 53, 0.5); }
+  .reveal-btn:disabled { opacity: 0.35; cursor: default; transform: none !important; box-shadow: none !important; }
+  .reveal-btn .btn-text { transition: all 0.3s; }
+
+  /* ===== SELF-MARK ===== */
+  .mark-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5em;
+    max-width: 800px;
+    width: 100%;
+  }
+  .mark-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 1.5em;
+  }
+  .mark-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.6em; color: var(--blue-glow); }
+  .mark-card p { font-size: 0.88rem; color: var(--text-dim); line-height: 1.55; }
+
+  /* ===== FULLSCREEN BUTTON ===== */
+  .fs-btn {
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    z-index: 200;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    color: var(--text-dim);
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: all 0.2s;
+  }
+  .fs-btn:hover { background: #2a2a45; color: #fff; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .three-col { grid-template-columns: 1fr; max-width: 400px; }
+    .reveal-container { grid-template-columns: 1fr; }
+    .mark-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ===== DECORATIVE ===== */
+  .bg-glow {
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bg-glow.blue { background: var(--blue-glow); top: -100px; right: -100px; }
+  .bg-glow.green { background: var(--green-light); bottom: -100px; left: -100px; }
+
+  .slide > * { position: relative; z-index: 1; }
+
+  .emoji-lg { font-size: 3.5rem; margin-bottom: 0.5em; }
+
+  /* Keyboard hint */
+  .key-hint {
+    position: fixed;
+    bottom: 74px;
+    right: 3vw;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    opacity: 0.5;
+  }
+  .key-hint kbd {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <span class="brand">Lesson 3.1 &mdash; Radio Club Coding Project</span>
+  <span class="lesson-tag">Phase 2: Code-to-Pseudocode Bridge</span>
+</div>
+<div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- FULLSCREEN -->
+<button class="fs-btn" id="fsBtn" title="Toggle fullscreen">&#x26F6;</button>
+
+<!-- KEYBOARD HINT -->
+<div class="key-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate &nbsp;|&nbsp; <kbd>Space</kbd> to reveal</div>
+
+<!-- ==================== SLIDE 1: TITLE ==================== -->
+<div class="slide active" id="slide-0">
+  <div class="bg-glow blue"></div>
+  <div class="bg-glow green"></div>
+  <div class="phase-badge">Phase 2 of 5</div>
+  <div class="slide-title">Code-to-Pseudocode<br>Bridge</div>
+  <div class="slide-subtitle">Can you read real Python code and translate it into structured NESA pseudocode &mdash; step by step?</div>
+  <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:0.5em;">
+    <span style="background:var(--card); border:1px solid var(--card-border); padding:8px 18px; border-radius:10px; font-size:0.85rem; color:var(--text-dim);">&#x1F552; ~12 minutes</span>
+    <span style="background:var(--card); border:1px solid var(--card-border); padding:8px 18px; border-radius:10px; font-size:0.85rem; color:var(--text-dim);">&#x1F4DD; Paper &amp; pen ready</span>
+    <span style="background:var(--card); border:1px solid var(--card-border); padding:8px 18px; border-radius:10px; font-size:0.85rem; color:var(--text-dim);">&#x1F9E0; Individual work</span>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 2: WHAT IS PSEUDOCODE ==================== -->
+<div class="slide" id="slide-1">
+  <div class="bg-glow blue"></div>
+  <div class="section-label">Before we begin</div>
+  <div class="slide-title" style="font-size:clamp(1.6rem, 3vw, 2.5rem);">What is Pseudocode?</div>
+  <div class="slide-subtitle">Pseudocode describes program logic using <strong style="color:#fff;">structured keywords</strong> instead of a specific programming language. In NSW, we follow the <strong style="color:#fff;">NESA pseudocode standard</strong>.</div>
+  <div class="three-col">
+    <div class="col-card">
+      <div class="icon">&#x1F520;</div>
+      <h3>CAPS Keywords</h3>
+      <p>Keywords like <code style="background:rgba(255,255,255,0.1); padding:2px 5px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85em;">IF</code>, <code style="background:rgba(255,255,255,0.1); padding:2px 5px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85em;">DISPLAY</code>, <code style="background:rgba(255,255,255,0.1); padding:2px 5px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85em;">INPUT</code> are always written in capitals</p>
+    </div>
+    <div class="col-card">
+      <div class="icon">&#x1F9E9;</div>
+      <h3>Matching Pairs</h3>
+      <p>Every <code style="background:rgba(255,255,255,0.1); padding:2px 5px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85em;">IF</code> needs an <code style="background:rgba(255,255,255,0.1); padding:2px 5px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85em;">ENDIF</code>, every <code style="background:rgba(255,255,255,0.1); padding:2px 5px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85em;">BEGIN</code> needs an <code style="background:rgba(255,255,255,0.1); padding:2px 5px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85em;">END</code></p>
+    </div>
+    <div class="col-card">
+      <div class="icon">&#x1F3AF;</div>
+      <h3>Logic First</h3>
+      <p>Focuses on <em>what</em> the program does, not <em>how</em> it&rsquo;s written in any particular language</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 3: WHY REVERSE ENGINEER ==================== -->
+<div class="slide" id="slide-2">
+  <div class="bg-glow green"></div>
+  <div class="section-label">The challenge</div>
+  <div class="slide-title" style="font-size:clamp(1.6rem, 3vw, 2.5rem);">Why Reverse-Engineer?</div>
+  <div class="slide-subtitle">Most people learn to write pseudocode first, then code. Today we&rsquo;re doing it <strong style="color:#fff;">backwards</strong> &mdash; and that&rsquo;s on purpose.</div>
+  <div class="info-card">
+    <div style="display:grid; grid-template-columns:auto 1fr; gap:1.5em; align-items:start;">
+      <div style="font-size:2.5rem; line-height:1;">&#x1F504;</div>
+      <div>
+        <p style="font-size:0.95rem; line-height:1.7; margin-bottom:0.8em;">When you read working code and have to <strong>extract the logic yourself</strong>, you build a much deeper understanding of how programs work. You&rsquo;re not just following instructions &mdash; you&rsquo;re figuring out the thinking behind the code.</p>
+        <p style="font-size:0.95rem; line-height:1.7; color:var(--text-dim);">This is the same skill professional developers use when they need to understand someone else&rsquo;s code &mdash; which happens <em>all the time</em> in the real ICT industry.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 4: YOUR TASK ==================== -->
+<div class="slide" id="slide-3">
+  <div class="bg-glow blue"></div>
+  <div class="section-label">Activity instructions</div>
+  <div class="slide-title" style="font-size:clamp(1.6rem, 3vw, 2.5rem);">Your Task</div>
+  <div class="info-card" style="max-width:700px;">
+    <ol style="list-style:none; counter-reset:steps; padding:0;">
+      <li style="counter-increment:steps; display:flex; gap:14px; align-items:flex-start; margin-bottom:1.2em;">
+        <span style="background:var(--blue-glow); color:#fff; min-width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.85rem; flex-shrink:0;">1</span>
+        <div><strong style="color:#fff;">Read the code carefully</strong><br><span style="color:var(--text-dim); font-size:0.9rem;">On the next screen you&rsquo;ll see a short Python program. Read every line.</span></div>
+      </li>
+      <li style="counter-increment:steps; display:flex; gap:14px; align-items:flex-start; margin-bottom:1.2em;">
+        <span style="background:var(--blue-glow); color:#fff; min-width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.85rem; flex-shrink:0;">2</span>
+        <div><strong style="color:#fff;">Write pseudocode on paper</strong><br><span style="color:var(--text-dim); font-size:0.9rem;">Use NESA pseudocode format with CAPS keywords (DISPLAY, INPUT, IF...THEN...ENDIF). Don&rsquo;t copy the code &mdash; translate the logic.</span></div>
+      </li>
+      <li style="counter-increment:steps; display:flex; gap:14px; align-items:flex-start; margin-bottom:1.2em;">
+        <span style="background:var(--blue-glow); color:#fff; min-width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.85rem; flex-shrink:0;">3</span>
+        <div><strong style="color:#fff;">Compare &amp; self-mark</strong><br><span style="color:var(--text-dim); font-size:0.9rem;">We&rsquo;ll reveal the answers one at a time. Give yourself a tick for each step you got right.</span></div>
+      </li>
+    </ol>
+  </div>
+  <div class="hint-card">
+    <div class="hint-label">&#x1F4A1; Hint</div>
+    <p>Look for <strong>groups of lines</strong> that work together. For example, several <code style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85em;">print()</code> lines in a row might all map to one NESA keyword: <code style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85em;">DISPLAY</code></p>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 5: HINTS & CLUES ==================== -->
+<div class="slide" id="slide-4">
+  <div class="bg-glow green"></div>
+  <div class="section-label">Things to look for</div>
+  <div class="slide-title" style="font-size:clamp(1.5rem, 2.8vw, 2.2rem);">Reading Code: What to Notice</div>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.2em; max-width:850px; width:100%;">
+    <div class="hint-card" style="margin:0;">
+      <div class="hint-label">&#x1F50D; Pattern 1: DISPLAY</div>
+      <p>Python&rsquo;s <code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85em;">print("...")</code> maps to the NESA keyword <code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85em;">DISPLAY</code>. Multiple prints in a row may be one DISPLAY step.</p>
+    </div>
+    <div class="hint-card" style="margin:0;">
+      <div class="hint-label">&#x1F50D; Pattern 2: INPUT</div>
+      <p>Python&rsquo;s <code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85em;">input("...")</code> maps to <code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85em;">INPUT</code>. The result is stored in a variable &mdash; name it clearly.</p>
+    </div>
+    <div class="hint-card" style="margin:0;">
+      <div class="hint-label">&#x1F50D; Pattern 3: IF&hellip;THEN&hellip;ENDIF</div>
+      <p>Python&rsquo;s <code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85em;">if / elif / else</code> maps to <code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85em;">IF...THEN / ELSE IF...THEN / ELSE / ENDIF</code>. Every IF needs an ENDIF.</p>
+    </div>
+    <div class="hint-card" style="margin:0;">
+      <div class="hint-label">&#x1F50D; Pattern 4: ELSE</div>
+      <p><code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85em;">ELSE</code> catches <strong>everything that doesn&rsquo;t match</strong>. Don&rsquo;t forget to close the whole block with <code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:0.85em;">ENDIF</code>.</p>
+    </div>
+  </div>
+  <div style="margin-top:1.5em; text-align:center;">
+    <span style="background:rgba(84,130,53,0.15); border:1px solid rgba(84,130,53,0.3); color:var(--green-light); padding:10px 24px; border-radius:12px; font-size:0.9rem; font-weight:600; display:inline-block;">&#x23F1; You&rsquo;ll have 2 minutes to read the code on the next screen</span>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 6: THE CODE ==================== -->
+<div class="slide" id="slide-5">
+  <div class="bg-glow blue"></div>
+  <div class="section-label">Read this program carefully</div>
+  <div class="slide-title" style="font-size:clamp(1.4rem, 2.5vw, 2rem);">The Python Code</div>
+  <div class="code-block">
+    <div class="code-header">
+      <div class="code-dot red"></div>
+      <div class="code-dot yellow"></div>
+      <div class="code-dot green"></div>
+      <span class="code-filename">radio_manager.py</span>
+    </div>
+    <div class="code-body">
+      <div class="code-line"><span class="ln">1</span><span class="code"><span class="fn">print</span>(<span class="str">"=== School Radio Manager ==="</span>)</span></div>
+      <div class="code-line"><span class="ln">2</span><span class="code"><span class="fn">print</span>(<span class="str">"1. Add a song request"</span>)</span></div>
+      <div class="code-line"><span class="ln">3</span><span class="code"><span class="fn">print</span>(<span class="str">"2. View all requests"</span>)</span></div>
+      <div class="code-line"><span class="ln">4</span><span class="code"><span class="fn">print</span>(<span class="str">"3. Add presenter notes"</span>)</span></div>
+      <div class="code-line"><span class="ln">5</span><span class="code"><span class="fn">print</span>(<span class="str">"4. Exit"</span>)</span></div>
+      <div class="code-line"><span class="ln">6</span><span class="code"><span class="var">choice</span> = <span class="fn">input</span>(<span class="str">"Enter your choice (1-4): "</span>)</span></div>
+      <div class="code-line"><span class="ln">7</span><span class="code"><span class="kw">if</span> <span class="var">choice</span> <span class="op">==</span> <span class="str">"1"</span>:</span></div>
+      <div class="code-line"><span class="ln">8</span><span class="code">    <span class="fn">print</span>(<span class="str">"Adding a song request..."</span>)</span></div>
+      <div class="code-line"><span class="ln">9</span><span class="code"><span class="kw">elif</span> <span class="var">choice</span> <span class="op">==</span> <span class="str">"2"</span>:</span></div>
+      <div class="code-line"><span class="ln">10</span><span class="code">    <span class="fn">print</span>(<span class="str">"Showing all requests..."</span>)</span></div>
+      <div class="code-line"><span class="ln">11</span><span class="code"><span class="kw">elif</span> <span class="var">choice</span> <span class="op">==</span> <span class="str">"3"</span>:</span></div>
+      <div class="code-line"><span class="ln">12</span><span class="code">    <span class="fn">print</span>(<span class="str">"Opening presenter notes..."</span>)</span></div>
+      <div class="code-line"><span class="ln">13</span><span class="code"><span class="kw">elif</span> <span class="var">choice</span> <span class="op">==</span> <span class="str">"4"</span>:</span></div>
+      <div class="code-line"><span class="ln">14</span><span class="code">    <span class="fn">print</span>(<span class="str">"Goodbye!"</span>)</span></div>
+      <div class="code-line"><span class="ln">15</span><span class="code"><span class="kw">else</span>:</span></div>
+      <div class="code-line"><span class="ln">16</span><span class="code">    <span class="fn">print</span>(<span class="str">"Invalid choice. Please try again."</span>)</span></div>
+    </div>
+  </div>
+  <div style="margin-top:1.2em; text-align:center;">
+    <span style="color:var(--text-dim); font-size:0.9rem;">&#x270F;&#xFE0F; Now write your NESA pseudocode on paper &mdash; use CAPS keywords and proper structure</span>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 7: INTERACTIVE REVEAL ==================== -->
+<div class="slide" id="slide-6">
+  <div class="bg-glow blue"></div>
+  <div class="bg-glow green"></div>
+  <div class="section-label">Let&rsquo;s check your answers</div>
+  <div class="slide-title" style="font-size:clamp(1.3rem, 2.2vw, 1.8rem); margin-bottom:0.8em;">Reveal the Pseudocode</div>
+
+  <div class="reveal-container">
+    <!-- LEFT: Code -->
+    <div class="reveal-code">
+      <div class="code-header">
+        <div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div>
+        <span class="code-filename">radio_manager.py</span>
+      </div>
+      <div class="code-body" id="revealCodeBody">
+        <div class="code-line" data-group="0"><span class="ln">1</span><span class="code"><span class="fn">print</span>(<span class="str">"=== School Radio Manager ==="</span>)</span></div>
+        <div class="code-line" data-group="1"><span class="ln">2</span><span class="code"><span class="fn">print</span>(<span class="str">"1. Add a song request"</span>)</span></div>
+        <div class="code-line" data-group="1"><span class="ln">3</span><span class="code"><span class="fn">print</span>(<span class="str">"2. View all requests"</span>)</span></div>
+        <div class="code-line" data-group="1"><span class="ln">4</span><span class="code"><span class="fn">print</span>(<span class="str">"3. Add presenter notes"</span>)</span></div>
+        <div class="code-line" data-group="1"><span class="ln">5</span><span class="code"><span class="fn">print</span>(<span class="str">"4. Exit"</span>)</span></div>
+        <div class="code-line" data-group="2"><span class="ln">6</span><span class="code"><span class="var">choice</span> = <span class="fn">input</span>(<span class="str">"Enter your choice (1-4): "</span>)</span></div>
+        <div class="code-line" data-group="3"><span class="ln">7</span><span class="code"><span class="kw">if</span> <span class="var">choice</span> <span class="op">==</span> <span class="str">"1"</span>:</span></div>
+        <div class="code-line" data-group="3"><span class="ln">8</span><span class="code">    <span class="fn">print</span>(<span class="str">"Adding a song request..."</span>)</span></div>
+        <div class="code-line" data-group="4"><span class="ln">9</span><span class="code"><span class="kw">elif</span> <span class="var">choice</span> <span class="op">==</span> <span class="str">"2"</span>:</span></div>
+        <div class="code-line" data-group="4"><span class="ln">10</span><span class="code">    <span class="fn">print</span>(<span class="str">"Showing all requests..."</span>)</span></div>
+        <div class="code-line" data-group="5"><span class="ln">11</span><span class="code"><span class="kw">elif</span> <span class="var">choice</span> <span class="op">==</span> <span class="str">"3"</span>:</span></div>
+        <div class="code-line" data-group="5"><span class="ln">12</span><span class="code">    <span class="fn">print</span>(<span class="str">"Opening presenter notes..."</span>)</span></div>
+        <div class="code-line" data-group="6"><span class="ln">13</span><span class="code"><span class="kw">elif</span> <span class="var">choice</span> <span class="op">==</span> <span class="str">"4"</span>:</span></div>
+        <div class="code-line" data-group="6"><span class="ln">14</span><span class="code">    <span class="fn">print</span>(<span class="str">"Goodbye!"</span>)</span></div>
+        <div class="code-line" data-group="7"><span class="ln">15</span><span class="code"><span class="kw">else</span>:</span></div>
+        <div class="code-line" data-group="7"><span class="ln">16</span><span class="code">    <span class="fn">print</span>(<span class="str">"Invalid choice. Please try again."</span>)</span></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Reveal panel -->
+    <div class="reveal-panel">
+      <div class="reveal-panel-header">
+        <span>Pseudocode Steps</span>
+        <span id="revealScore" style="font-size:0.8rem; opacity:0.8;">0 / 8 revealed</span>
+      </div>
+      <ul class="reveal-list" id="revealList">
+        <li class="reveal-item" data-idx="0"><span class="step-num">1</span><span class="answer">Click &ldquo;Reveal Next&rdquo; to check&hellip;</span></li>
+        <li class="reveal-item" data-idx="1"><span class="step-num">2</span><span class="answer">&mdash;</span></li>
+        <li class="reveal-item" data-idx="2"><span class="step-num">3</span><span class="answer">&mdash;</span></li>
+        <li class="reveal-item" data-idx="3"><span class="step-num">4</span><span class="answer">&mdash;</span></li>
+        <li class="reveal-item" data-idx="4"><span class="step-num">5</span><span class="answer">&mdash;</span></li>
+        <li class="reveal-item" data-idx="5"><span class="step-num">6</span><span class="answer">&mdash;</span></li>
+        <li class="reveal-item" data-idx="6"><span class="step-num">7</span><span class="answer">&mdash;</span></li>
+        <li class="reveal-item" data-idx="7"><span class="step-num">8</span><span class="answer">&mdash;</span></li>
+      </ul>
+      <button class="reveal-btn" id="revealBtn" onclick="revealNext()">
+        <span class="btn-text">&#x2728; Reveal Next Step</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 8: SELF-MARK ==================== -->
+<div class="slide" id="slide-7">
+  <div class="bg-glow green"></div>
+  <div class="section-label">Self-assessment</div>
+  <div class="slide-title" style="font-size:clamp(1.5rem, 2.8vw, 2.2rem);">How Did You Go?</div>
+  <div class="slide-subtitle" style="max-width:600px;">Give yourself a tick for each pseudocode step you captured correctly. Be honest &mdash; this is about knowing where you&rsquo;re at.</div>
+  <div class="mark-grid">
+    <div class="mark-card" style="border-left:4px solid var(--success);">
+      <h3>&#x1F7E2; &nbsp;7&ndash;8 steps</h3>
+      <p>Excellent &mdash; you can read code and extract logic confidently. Ready for the next challenge.</p>
+    </div>
+    <div class="mark-card" style="border-left:4px solid var(--blue-glow);">
+      <h3>&#x1F535; &nbsp;5&ndash;6 steps</h3>
+      <p>Strong start. You got the main flow. Look at which steps you missed &mdash; were they the decision branches?</p>
+    </div>
+    <div class="mark-card" style="border-left:4px solid var(--orange);">
+      <h3>&#x1F7E0; &nbsp;3&ndash;4 steps</h3>
+      <p>Getting there. You picked up the basics. Focus on the <code style="font-family:'JetBrains Mono',monospace; font-size:0.85em; background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px;">IF...THEN / ELSE IF...THEN / ELSE / ENDIF</code> pattern next time.</p>
+    </div>
+    <div class="mark-card" style="border-left:4px solid #ef4444;">
+      <h3>&#x1F534; &nbsp;1&ndash;2 steps</h3>
+      <p>That&rsquo;s OK &mdash; this was tough! The patterns on the hints slide will help. We&rsquo;ll practise more in the next activity.</p>
+    </div>
+  </div>
+  <div class="hint-card" style="max-width:700px; margin-top:1.5em;">
+    <div class="hint-label">&#x1F4AD; Quick reflection</div>
+    <p>Turn to the person next to you: <strong>&ldquo;Which step did most people miss, and why do you think that is?&rdquo;</strong></p>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 9: WHAT'S NEXT ==================== -->
+<div class="slide" id="slide-8">
+  <div class="bg-glow blue"></div>
+  <div class="bg-glow green"></div>
+  <div class="emoji-lg">&#x1F680;</div>
+  <div class="slide-title" style="font-size:clamp(1.6rem, 3vw, 2.5rem);">Nice Work!</div>
+  <div class="slide-subtitle">You just did what professional developers do every day &mdash; read someone else&rsquo;s code and figured out the logic behind it.</div>
+  <div class="info-card" style="max-width:600px; text-align:center;">
+    <p style="font-size:1rem; line-height:1.7; margin-bottom:0.8em;"><strong style="color:var(--green-light);">Up next: Phase 3 &mdash; Name It Right</strong></p>
+    <p style="font-size:0.9rem; color:var(--text-dim); line-height:1.6;">You&rsquo;ll invent your own variable names for the radio show data. Good naming is what separates code that works from code that makes sense.</p>
+  </div>
+</div>
+
+<!-- NAVIGATION BAR -->
+<div class="nav-bar">
+  <button class="nav-btn prev" id="prevBtn" onclick="changeSlide(-1)" disabled>&larr; Back</button>
+  <span class="slide-counter" id="slideCounter">1 / 9</span>
+  <button class="nav-btn next" id="nextBtn" onclick="changeSlide(1)">Next &rarr;</button>
+</div>
+
+<script>
+  const TOTAL_SLIDES = 9;
+  let currentSlide = 0;
+  let revealStep = 0;
+
+  const answers = [
+    "DISPLAY program title",
+    "DISPLAY menu options (lines 2\u20135)",
+    "INPUT Choice",
+    "IF Choice = \"1\" THEN DISPLAY add request message",
+    "ELSE IF Choice = \"2\" THEN DISPLAY view requests message",
+    "ELSE IF Choice = \"3\" THEN DISPLAY presenter notes message",
+    "ELSE IF Choice = \"4\" THEN DISPLAY goodbye message",
+    "ELSE DISPLAY invalid choice error ENDIF"
+  ];
+
+  function updateSlide() {
+    document.querySelectorAll('.slide').forEach((s, i) => {
+      s.classList.toggle('active', i === currentSlide);
+    });
+    document.getElementById('prevBtn').disabled = currentSlide === 0;
+    document.getElementById('nextBtn').disabled = currentSlide === TOTAL_SLIDES - 1;
+    document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${TOTAL_SLIDES}`;
+    document.getElementById('progressFill').style.width = `${((currentSlide + 1) / TOTAL_SLIDES) * 100}%`;
+
+    // When arriving at the reveal slide, pre-highlight the upcoming group
+    if (currentSlide === 6 && revealStep < answers.length) {
+      highlightUpcoming(revealStep);
+    }
+  }
+
+  function changeSlide(dir) {
+    const next = currentSlide + dir;
+    if (next >= 0 && next < TOTAL_SLIDES) {
+      currentSlide = next;
+      updateSlide();
+    }
+  }
+
+  function highlightUpcoming(groupIndex) {
+    const codeLines = document.querySelectorAll('#revealCodeBody .code-line');
+    codeLines.forEach(cl => cl.classList.remove('upcoming'));
+    if (groupIndex < answers.length) {
+      codeLines.forEach(cl => {
+        if (parseInt(cl.dataset.group) === groupIndex) {
+          cl.classList.add('upcoming');
+        }
+      });
+    }
+  }
+
+  function revealNext() {
+    if (revealStep >= answers.length) return;
+
+    const items = document.querySelectorAll('.reveal-item');
+    const item = items[revealStep];
+    item.classList.add('revealed');
+    item.querySelector('.answer').textContent = answers[revealStep];
+
+    // Clear upcoming and highlight the just-revealed group
+    const codeLines = document.querySelectorAll('#revealCodeBody .code-line');
+    codeLines.forEach(cl => {
+      cl.classList.remove('highlight');
+      cl.classList.remove('upcoming');
+    });
+    codeLines.forEach(cl => {
+      if (parseInt(cl.dataset.group) === revealStep) {
+        cl.classList.add('highlight');
+      }
+    });
+
+    revealStep++;
+    document.getElementById('revealScore').textContent = `${revealStep} / 8 revealed`;
+
+    // Pre-highlight the NEXT group as upcoming
+    if (revealStep < answers.length) {
+      highlightUpcoming(revealStep);
+    }
+
+    if (revealStep >= answers.length) {
+      const btn = document.getElementById('revealBtn');
+      btn.querySelector('.btn-text').textContent = '&#x2705; All steps revealed!';
+      btn.disabled = true;
+      // Remove all highlights after a moment
+      setTimeout(() => {
+        document.querySelectorAll('#revealCodeBody .code-line').forEach(cl => {
+          cl.classList.remove('highlight');
+          cl.classList.remove('upcoming');
+        });
+      }, 2000);
+    }
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      changeSlide(1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      changeSlide(-1);
+    } else if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      // If on reveal slide, reveal next; otherwise advance
+      if (currentSlide === 6 && revealStep < answers.length) {
+        revealNext();
+      } else {
+        changeSlide(1);
+      }
+    }
+  });
+
+  // Fullscreen toggle
+  document.getElementById('fsBtn').addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen();
+    }
+  });
+
+  updateSlide();
+</script>
+</body>
+</html>
